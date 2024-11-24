@@ -54,7 +54,7 @@ export default function Home() {
   return (
     <div className="flex h-screen">
       {/* 左侧编辑区 */}
-      <div className="w-1/2 p-4">
+      <div className="w-1/2 p-4 overflow-hidden">
         <ScrollArea className="h-full">
           <Textarea
             className="min-h-[90vh] w-full resize-none"
@@ -69,9 +69,9 @@ export default function Home() {
       <Separator orientation="vertical" />
       
       {/* 右侧预览区 */}
-      <div className="w-1/2 p-4">
-        <ScrollArea className="h-full">
-          <div className="prose dark:prose-invert max-w-none">
+      <div className="w-1/2 p-4 overflow-hidden">
+        <ScrollArea className="h-full w-full">
+          <div className="prose dark:prose-invert w-full">
             <MarkdownRenderer content={markdown} />
           </div>
         </ScrollArea>

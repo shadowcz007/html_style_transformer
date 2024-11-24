@@ -79,6 +79,13 @@ export default function MarkdownRenderer({ content }) {
             h5: ({node, ...props}) => <h5 className="markdown-h5" {...props} />,
             h6: ({node, ...props}) => <h6 className="markdown-h6" {...props} />,
             li: ({node, ...props}) => <li className="markdown-li" {...props} />,
+            img: ({node, ...props}) => (
+              <img 
+                className="max-w-full h-auto" 
+                {...props} 
+                style={{ maxWidth: '100%' }}
+              />
+            ),
           }}
         >
           {content}

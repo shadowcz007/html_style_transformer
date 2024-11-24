@@ -9,6 +9,7 @@ export const themes = {
         background: #fafaf8;
         font-size: 16px;
         padding: 20px;
+        overflow-x: hidden;
       }
       .markdown-h1, .markdown-h2, .markdown-h3,
       .markdown-h4, .markdown-h5, .markdown-h6 {
@@ -61,6 +62,10 @@ export const themes = {
       }
       img {
         border-radius: 10px;
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+        margin: 1.5em auto;
       }
       .markdown-body ol {
         color: #2d2a2a;
@@ -102,6 +107,7 @@ export const themes = {
         background: #ffffff;
         font-size: 16px;
         padding: 20px;
+        overflow-x: hidden;
       }
       .markdown-h1, .markdown-h2, .markdown-h3,
       .markdown-h4, .markdown-h5, .markdown-h6 {
@@ -156,6 +162,10 @@ export const themes = {
       }
       img {
         border-radius: 10px;
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+        margin: 1.5em auto;
       }
       .markdown-body ol {
         color: #121212;
@@ -199,6 +209,7 @@ export const themes = {
         margin: 0 auto;
         font-size: 16px;
         padding: 20px;
+        overflow-x: hidden;
       }
       .markdown-h1, .markdown-h2, .markdown-h3,
       .markdown-h4, .markdown-h5, .markdown-h6 {
@@ -249,6 +260,10 @@ export const themes = {
       }
       img {
         border-radius: 10px;
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+        margin: 1.5em auto;
       }
       .markdown-body ol {
         color: #2c3338;
@@ -290,6 +305,7 @@ export const themes = {
         background: #fff9f9;
         font-size: 16px;
         padding: 20px;
+        overflow-x: hidden;
       }
       .markdown-h1, .markdown-h2, .markdown-h3,
       .markdown-h4, .markdown-h5, .markdown-h6 {
@@ -370,6 +386,10 @@ export const themes = {
       }
       img {
         border-radius: 10px;
+        max-width: 100% !important;
+        height: auto !important;
+        display: block;
+        margin: 1.5em auto;
       }
       .markdown-body ol {
         color: #333;
