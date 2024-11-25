@@ -11,6 +11,10 @@ export default function MarkdownRenderer({ content }) {
   const [currentTheme, setCurrentTheme] = useState('wabisabi');
   const markdownRef = useRef(null);
 
+  const preprocessMarkdown = (text) => {
+    return text.replace(/\*\*[^*]+\*\*(?![.,!?;:，。！？；：])/g, match => match + ' ');
+  };
+
   const copyHtmlToClipboard = () => {
     if (!markdownRef.current) return;
     
@@ -40,7 +44,6 @@ export default function MarkdownRenderer({ content }) {
 
   return (
     <Card className="p-4">
-      {/* 修改按钮容器的样式 */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex gap-2">
           {Object.entries(themes).map(([themeKey, theme]) => (
@@ -55,7 +58,6 @@ export default function MarkdownRenderer({ content }) {
           ))}
         </div>
         
-        {/* 复制按钮使用更显眼的样式 */}
         <Button
           variant="default"
           onClick={copyHtmlToClipboard}
@@ -88,7 +90,7 @@ export default function MarkdownRenderer({ content }) {
             ),
           }}
         >
-          {content}
+          {preprocessMarkdown(content)}
         </ReactMarkdown>
       </div>
 
