@@ -10,6 +10,7 @@ import ContactPanel from './components/ContactPanel';
 export default function Home() {
   const [markdown, setMarkdown] = useState('');
   const turndownService = new TurndownService();
+  const [isMobile, setIsMobile] = useState(false);
   
   useEffect(() => {
     // 加载默认的Markdown内容
@@ -22,6 +23,19 @@ export default function Home() {
         console.error('加载Markdown文件失败:', error);
         setMarkdown('# 加载失败\n\n请重试...');
       });
+  }, []);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    handleResize(); // 初始化
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
   
   const handleContentChange = (e) => {
@@ -73,7 +87,7 @@ export default function Home() {
       <div className="w-1/2 p-4 overflow-hidden">
         <ScrollArea className="h-full w-full">
           <div className="prose dark:prose-invert w-full max-w-none">
-            <MarkdownRenderer content={markdown} />
+            <MarkdownRenderer content={markdown} isMobile={isMobile} />
           </div>
         </ScrollArea>
       </div>

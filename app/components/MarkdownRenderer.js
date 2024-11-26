@@ -7,6 +7,7 @@ import { themes } from '../styles/markdownThemes';
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose, ToastAction } from "@/components/ui/toast"
+import html2canvas from 'html2canvas';
 
 export default function MarkdownRenderer({ content }) {
   const [currentTheme, setCurrentTheme] = useState('wabisabi');
@@ -44,6 +45,63 @@ export default function MarkdownRenderer({ content }) {
     document.body.removeChild(tempElement);
   };
 
+  const downloadAsImage = async () => {
+    if (!markdownRef.current) return;
+    
+    try {
+      const element = markdownRef.current;
+      
+      // 等待所有图片加载完成
+      const images = element.getElementsByTagName('img');
+      const imagePromises = Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve; // 即使图片加载失败也继续
+        });
+      });
+      
+      await Promise.all(imagePromises);
+      
+      // 添加临时样式使背景为白色
+      element.style.backgroundColor = 'white';
+      element.style.padding = '20px';
+      
+      const canvas = await html2canvas(element, {
+        width: 1080,
+        scale: 2,
+        useCORS: true, // 允许跨域图片
+        backgroundColor: '#ffffff',
+        logging: true, // 开启调试日志
+        onclone: (clonedDoc) => {
+          // 确保克隆的文档中的样式被正确应用
+          const clonedElement = clonedDoc.querySelector('.markdown-body');
+          if (clonedElement) {
+            clonedElement.style.width = '1080px';
+            clonedElement.style.backgroundColor = 'white';
+            clonedElement.style.padding = '20px';
+          }
+        }
+      });
+      
+      // 恢复原始样式
+      element.style.backgroundColor = '';
+      element.style.padding = '';
+      
+      const image = canvas.toDataURL('image/png', 1.0);
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = 'markdown-content.png';
+      link.click();
+      
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (err) {
+      console.error('生成图片失败:', err);
+      alert('生成图片失败，请稍后重试');
+    }
+  };
+
   return (
     <>
       <Card className="p-4">
@@ -61,21 +119,34 @@ export default function MarkdownRenderer({ content }) {
             ))}
           </div>
           
-          <Button
-            variant="default"
-            onClick={copyHtmlToClipboard}
-            size="sm"
-            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-md transition-all duration-200 hover:shadow-lg"
-          >
-            复制富文本
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="default"
+              onClick={downloadAsImage}
+              size="sm"
+              className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+            >
+              下载图片
+            </Button>
+            <Button
+              variant="default"
+              onClick={copyHtmlToClipboard}
+              size="sm"
+              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+            >
+              复制富文本
+            </Button>
+          </div>
         </div>
 
-        <div ref={markdownRef}>
+        <div 
+          ref={markdownRef}
+          className="markdown-container"
+        >
           <ReactMarkdown 
             rehypePlugins={[rehypeRaw]} 
             remarkPlugins={[remarkGfm]}
-            className="markdown-body"
+            className={`markdown-body ${currentTheme}`}
             components={{
               h1: ({node, ...props}) => <h1 className="markdown-h1" {...props} />,
               h2: ({node, ...props}) => <h2 className="markdown-h2" {...props} />,
@@ -88,7 +159,13 @@ export default function MarkdownRenderer({ content }) {
                 <img 
                   className="max-w-full h-auto" 
                   {...props} 
-                  style={{ maxWidth: '100%' }}
+                  crossOrigin="anonymous" // 添加跨域支持
+                  loading="eager" // 立即加载图片
+                  style={{ 
+                    maxWidth: '100%',
+                    display: 'block', // 确保图片正确显示
+                    margin: '1em 0' 
+                  }}
                 />
               ),
             }}
@@ -99,14 +176,27 @@ export default function MarkdownRenderer({ content }) {
 
         <style jsx global>{`
           ${themes[currentTheme].styles}
+          .markdown-container {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+          }
+          .markdown-body {
+            width: 100%;
+            overflow-wrap: break-word;
+          }
+          .markdown-body img {
+            max-width: 100%;
+            height: auto;
+          }
         `}</style>
       </Card>
       
       <ToastProvider>
         <Toast open={showToast} onOpenChange={setShowToast}>
-          <ToastTitle>复制成功</ToastTitle>
+          <ToastTitle>操作成功</ToastTitle>
           <ToastDescription>
-            HTML内容已复制到剪贴板
+            {showToast === 'copy' ? '内容已复制到剪贴板' : '图片已成功下载'}
           </ToastDescription>
         </Toast>
         <ToastViewport />
