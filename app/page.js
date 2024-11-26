@@ -71,7 +71,7 @@ export default function Home() {
       {/* 右侧预览区 */}
       <div className="w-1/2 p-4 overflow-hidden">
         <ScrollArea className="h-full w-full">
-          <div className="prose dark:prose-invert w-full">
+          <div className="prose dark:prose-invert w-full max-w-none">
             <MarkdownRenderer content={markdown} />
           </div>
         </ScrollArea>
