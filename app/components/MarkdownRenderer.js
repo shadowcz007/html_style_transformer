@@ -6,10 +6,12 @@ import remarkGfm from 'remark-gfm';
 import { themes } from '../styles/markdownThemes';
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose, ToastAction } from "@/components/ui/toast"
 
 export default function MarkdownRenderer({ content }) {
   const [currentTheme, setCurrentTheme] = useState('wabisabi');
   const markdownRef = useRef(null);
+  const [showToast, setShowToast] = useState(false);
 
   const preprocessMarkdown = (text) => {
     return text.replace(/\*\*[^*]+\*\*(?![.,!?;:，。！？；：])/g, match => match + ' ');
@@ -32,10 +34,10 @@ export default function MarkdownRenderer({ content }) {
     
     try {
       document.execCommand('copy');
-      alert('HTML内容已复制到剪贴板！');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     } catch (err) {
       console.error('复制失败:', err);
-      alert('复制失败，请重试');
     }
     
     selection.removeAllRanges();
@@ -43,60 +45,72 @@ export default function MarkdownRenderer({ content }) {
   };
 
   return (
-    <Card className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2">
-          {Object.entries(themes).map(([themeKey, theme]) => (
-            <Button
-              key={themeKey}
-              variant={currentTheme === themeKey ? "default" : "outline"}
-              onClick={() => setCurrentTheme(themeKey)}
-              size="sm"
-            >
-              {theme.name}
-            </Button>
-          ))}
+    <>
+      <Card className="p-4">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex gap-2">
+            {Object.entries(themes).map(([themeKey, theme]) => (
+              <Button
+                key={themeKey}
+                variant={currentTheme === themeKey ? "default" : "outline"}
+                onClick={() => setCurrentTheme(themeKey)}
+                size="sm"
+              >
+                {theme.name}
+              </Button>
+            ))}
+          </div>
+          
+          <Button
+            variant="default"
+            onClick={copyHtmlToClipboard}
+            size="sm"
+            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-md transition-all duration-200 hover:shadow-lg"
+          >
+            复制富文本
+          </Button>
         </div>
-        
-        <Button
-          variant="default"
-          onClick={copyHtmlToClipboard}
-          size="sm"
-          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-md transition-all duration-200 hover:shadow-lg"
-        >
-          复制富文本
-        </Button>
-      </div>
 
-      <div ref={markdownRef}>
-        <ReactMarkdown 
-          rehypePlugins={[rehypeRaw]} 
-          remarkPlugins={[remarkGfm]}
-          className="markdown-body"
-          components={{
-            h1: ({node, ...props}) => <h1 className="markdown-h1" {...props} />,
-            h2: ({node, ...props}) => <h2 className="markdown-h2" {...props} />,
-            h3: ({node, ...props}) => <h3 className="markdown-h3" {...props} />,
-            h4: ({node, ...props}) => <h4 className="markdown-h4" {...props} />,
-            h5: ({node, ...props}) => <h5 className="markdown-h5" {...props} />,
-            h6: ({node, ...props}) => <h6 className="markdown-h6" {...props} />,
-            li: ({node, ...props}) => <li className="markdown-li" {...props} />,
-            img: ({node, ...props}) => (
-              <img 
-                className="max-w-full h-auto" 
-                {...props} 
-                style={{ maxWidth: '100%' }}
-              />
-            ),
-          }}
-        >
-          {preprocessMarkdown(content)}
-        </ReactMarkdown>
-      </div>
+        <div ref={markdownRef}>
+          <ReactMarkdown 
+            rehypePlugins={[rehypeRaw]} 
+            remarkPlugins={[remarkGfm]}
+            className="markdown-body"
+            components={{
+              h1: ({node, ...props}) => <h1 className="markdown-h1" {...props} />,
+              h2: ({node, ...props}) => <h2 className="markdown-h2" {...props} />,
+              h3: ({node, ...props}) => <h3 className="markdown-h3" {...props} />,
+              h4: ({node, ...props}) => <h4 className="markdown-h4" {...props} />,
+              h5: ({node, ...props}) => <h5 className="markdown-h5" {...props} />,
+              h6: ({node, ...props}) => <h6 className="markdown-h6" {...props} />,
+              li: ({node, ...props}) => <li className="markdown-li" {...props} />,
+              img: ({node, ...props}) => (
+                <img 
+                  className="max-w-full h-auto" 
+                  {...props} 
+                  style={{ maxWidth: '100%' }}
+                />
+              ),
+            }}
+          >
+            {preprocessMarkdown(content)}
+          </ReactMarkdown>
+        </div>
 
-      <style jsx global>{`
-        ${themes[currentTheme].styles}
-      `}</style>
-    </Card>
+        <style jsx global>{`
+          ${themes[currentTheme].styles}
+        `}</style>
+      </Card>
+      
+      <ToastProvider>
+        <Toast open={showToast} onOpenChange={setShowToast}>
+          <ToastTitle>复制成功</ToastTitle>
+          <ToastDescription>
+            HTML内容已复制到剪贴板
+          </ToastDescription>
+        </Toast>
+        <ToastViewport />
+      </ToastProvider>
+    </>
   );
 } 
