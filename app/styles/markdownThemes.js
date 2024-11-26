@@ -15,17 +15,23 @@ export const themes = {
       .markdown-h4, .markdown-h5, .markdown-h6 {
         color: #2d2a2a;
         font-weight: 400;
-        margin: 2.5em 0 1em;
-        letter-spacing: 0.05em;
+        margin: 20px 0 12px;
+        letter-spacing: 1px;
       }
       .markdown-h1 {
-        font-size: 2em;
+        font-size: 32px;
         border-bottom: 1px solid #d3d3d3;
-        padding-bottom: 0.5em;
+        padding-bottom: 8px;
+        margin-top: 28px;
       }
       .markdown-h2 {
-        font-size: 1.6em;
+        font-size: 24px;
         color: #4a4a4a;
+        margin-top: 24px;
+      }
+      .markdown-h3 {
+        font-size: 20px;
+        margin-top: 20px;
       }
       .markdown-li {
         color: #4a4a4a;
@@ -83,7 +89,7 @@ export const themes = {
       }
       .markdown-body ul,
       .markdown-body ol {
-        padding-left: 1em;
+        padding-left: 1.2em;
       }
       .markdown-body ul ul,
       .markdown-body ol ol,
@@ -94,6 +100,11 @@ export const themes = {
       .markdown-li {
         margin: 0.4em 0;
         padding-left: 0.2em;
+      }
+      p {
+        font-size: 16px !important;
+        margin: 16px 0;
+        line-height: 1.8;
       }
     `
   },
@@ -117,14 +128,20 @@ export const themes = {
         letter-spacing: 0.1em;
       }
       .markdown-h1 {
-        font-size: 2.4em;
+        font-size: 32px;
         border-left: 15px solid #e31e24;
-        padding-left: 1em;
-        margin: 1.5em 0;
+        padding-left: 16px;
+        margin: 24px 0 16px;
       }
       .markdown-h2 {
-        font-size: 1.8em;
+        font-size: 24px;
         border-bottom: 4px solid #1d71b8;
+        padding-bottom: 8px;
+        margin: 20px 0 12px;
+      }
+      .markdown-h3 {
+        font-size: 20px;
+        margin: 16px 0 12px;
       }
       .markdown-li {
         color: #121212;
@@ -183,7 +200,7 @@ export const themes = {
       }
       .markdown-body ul,
       .markdown-body ol {
-        padding-left: 1em;
+        padding-left: 1.2em;
       }
       .markdown-body ul ul,
       .markdown-body ol ol,
@@ -194,6 +211,11 @@ export const themes = {
       .markdown-li {
         margin: 0.4em 0;
         padding-left: 0.2em;
+      }
+      p {
+        font-size: 16px !important;
+        margin: 16px 0;
+        line-height: 1.6;
       }
     `
   },
@@ -209,50 +231,52 @@ export const themes = {
         margin: 0 auto;
         font-size: 16px;
         padding: 20px;
-        overflow-x: hidden;
       }
       .markdown-h1, .markdown-h2, .markdown-h3,
       .markdown-h4, .markdown-h5, .markdown-h6 {
         color: #1f2937;
         font-weight: 500;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.5px;
       }
       .markdown-h1 {
-        font-size: 2.2em;
-        margin-bottom: 1.5em;
+        font-size: 32px;
+        margin: 24px 0 16px;
       }
       .markdown-h2 {
-        font-size: 1.7em;
+        font-size: 24px;
         color: #374151;
+        margin: 20px 0 12px;
+      }
+      .markdown-h3 {
+        font-size: 20px;
+        margin: 16px 0 12px;
       }
       .markdown-li {
         color: #4b5563;
-        margin: 0.6em 0;
-        padding-left: 0.4em;
-      }
-      .markdown-li .markdown-li {
-        margin: 0.3em 0;
-        padding-left: 0.2em;
+        margin: 10px 0;
+        padding-left: 6px;
       }
       blockquote {
         background: #f9fafb;
         border-radius: 4px;
-        padding: 1.5em;
-        margin: 2em 0;
+        padding: 24px;
+        margin: 32px 0;
         color: #6b7280;
       }
       code {
         background: #f3f4f6;
         color: #374151;
-        padding: 0.2em 0.4em;
+        padding: 3px 6px;
         border-radius: 4px;
         font-family: 'SF Mono', monospace;
+        font-size: 14px;
       }
       pre code {
         background: #1f2937;
         color: #d4d4d4;
-        padding: 1.5em;
+        padding: 24px;
         border-radius: 6px;
+        font-size: 14px;
       }
       a {
         color: #059669;
@@ -263,35 +287,25 @@ export const themes = {
         max-width: 100% !important;
         height: auto !important;
         display: block;
-        margin: 1.5em auto;
+        margin: 24px auto;
       }
-      .markdown-body ol {
+      p {
+        font-size: 16px !important;
+        margin: 16px 0;
+        line-height: 1.7;
         color: #2c3338;
-      }
-      .markdown-ol {
-        color: #2c3338;
-      }
-      .markdown-strong {
-        color: #2c3338;
-        font-weight: bold;
-      }
-      strong {
-        color: #2c3338;
-        font-weight: bold;
       }
       .markdown-body ul,
       .markdown-body ol {
-        padding-left: 1em;
+        padding-left: 16px;
+        margin: 16px 0;
       }
       .markdown-body ul ul,
       .markdown-body ol ol,
       .markdown-body ul ol,
       .markdown-body ol ul {
-        padding-left: 0.5em;
-      }
-      .markdown-li {
-        margin: 0.4em 0;
-        padding-left: 0.2em;
+        padding-left: 8px;
+        margin: 8px 0;
       }
     `
   },
@@ -315,16 +329,23 @@ export const themes = {
         font-family: "Noto Serif SC", "SimSun", serif;
       }
       .markdown-h1 {
-        font-size: 2.4em;
+        font-size: 32px;
         text-align: center;
         border-bottom: 2px solid #c41e3a;
-        padding-bottom: 0.3em;
+        padding-bottom: 6px;
+        margin: 24px 0 16px;
       }
       .markdown-h2 {
-        font-size: 1.8em;
+        font-size: 24px;
         color: #8b0000;
         border-left: 4px solid #c41e3a;
-        padding-left: 0.5em;
+        padding-left: 8px;
+        margin: 20px 0 12px;
+      }
+      .markdown-h3 {
+        font-size: 20px;
+        color: #8b0000;
+        margin: 16px 0 12px;
       }
       .markdown-li {
         color: #4a4a4a;
@@ -407,7 +428,7 @@ export const themes = {
       }
       .markdown-body ul,
       .markdown-body ol {
-        padding-left: 1em;
+        padding-left: 1.2em;
       }
       .markdown-body ul ul,
       .markdown-body ol ol,
@@ -418,6 +439,12 @@ export const themes = {
       .markdown-li {
         margin: 0.4em 0;
         padding-left: 0.2em;
+      }
+      p {
+        font-size: 16px !important;
+        margin: 16px 0;
+        line-height: 2;
+        text-align: justify;
       }
     `
   }
