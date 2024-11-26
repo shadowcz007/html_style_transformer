@@ -5,6 +5,7 @@ import MarkdownRenderer from './components/MarkdownRenderer';
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import ContactPanel from './components/ContactPanel';
 
 export default function Home() {
   const [markdown, setMarkdown] = useState('');
@@ -76,6 +77,9 @@ export default function Home() {
           </div>
         </ScrollArea>
       </div>
+      
+      {/* 添加联系面板组件 */}
+      <ContactPanel />
     </div>
   );
 }
