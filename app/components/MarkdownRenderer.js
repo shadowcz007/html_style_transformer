@@ -18,31 +18,117 @@ export default function MarkdownRenderer({ content }) {
     return text.replace(/\*\*[^*]+\*\*(?![.,!?;:，。！？；：])/g, match => match + ' ');
   };
 
-  const copyHtmlToClipboard = () => {
+  const copyHtmlToClipboard = async () => {
     if (!markdownRef.current) return;
     
-    const htmlContent = markdownRef.current.innerHTML;
+    // 获取当前主题的样式配置
+    const currentThemeConfig = themes[currentTheme];
     
+    // 创建临时元素
     const tempElement = document.createElement('div');
-    tempElement.innerHTML = htmlContent;
-    document.body.appendChild(tempElement);
+    tempElement.innerHTML = markdownRef.current.innerHTML;
     
-    const range = document.createRange();
-    range.selectNode(tempElement);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+    // 添加全局样式
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: ${currentThemeConfig.fontFamily || '"Noto Serif SC", SimSun, serif'};
+        line-height: 1.75;
+        color: ${currentThemeConfig.textColor || '#2c3e50'};
+        background-color: white;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 2em;
+        font-weight: 700;
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
+        color: ${currentThemeConfig.h1Color || currentThemeConfig.headingColor || '#2c3e50'};
+        text-align: center;
+        padding-bottom: 0.3em;
+        border-bottom: ${currentThemeConfig.h1Border || '2px solid #2c3e50'};
+        font-family: ${currentThemeConfig.headingFontFamily || currentThemeConfig.fontFamily};
+      }
+      h2 {
+        font-size: 1.8em;
+        font-weight: 600;
+        margin-top: 2em;
+        margin-bottom: 1em;
+        color: ${currentThemeConfig.h2Color || currentThemeConfig.headingColor || '#2c3e50'};
+        padding-left: 0.5em;
+        border-left: ${currentThemeConfig.h2Border || '4px solid #2c3e50'};
+        font-family: ${currentThemeConfig.headingFontFamily || currentThemeConfig.fontFamily};
+      }
+      p {
+        margin-bottom: 1em;
+        font-size: 1.1em;
+        color: ${currentThemeConfig.textColor || '#2c3e50'};
+        font-family: ${currentThemeConfig.fontFamily};
+      }
+      blockquote {
+        border-left: ${currentThemeConfig.blockquoteBorder || '4px solid #ddd'};
+        color: ${currentThemeConfig.blockquoteColor || '#666'};
+        margin: 1em 0;
+        padding: 0.5em 1em;
+        background-color: ${currentThemeConfig.blockquoteBg || '#f8f8f8'};
+      }
+      pre {
+        background-color: ${currentThemeConfig.codeBg || '#f6f8fa'};
+        padding: 1em;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-family: ${currentThemeConfig.codeFontFamily || 'monospace'};
+      }
+      code {
+        font-family: ${currentThemeConfig.codeFontFamily || 'monospace'};
+        background-color: ${currentThemeConfig.inlineCodeBg || '#f6f8fa'};
+        padding: 0.2em 0.4em;
+        border-radius: 3px;
+        font-size: 0.9em;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        margin: 1em auto;
+        display: block;
+      }
+      ul, ol {
+        margin-bottom: 1em;
+        padding-left: 2em;
+      }
+      li {
+        margin-bottom: 0.5em;
+        line-height: 1.75;
+        font-family: ${currentThemeConfig.fontFamily};
+      }
+    `;
     
+    tempElement.insertBefore(styleElement, tempElement.firstChild);
+
+    // 清理所有 Tailwind 类名
+    const elements = tempElement.getElementsByTagName('*');
+    for (let element of elements) {
+      const classAttr = element.getAttribute('class');
+      if (classAttr) {
+        element.removeAttribute('class');
+      }
+    }
+
     try {
-      document.execCommand('copy');
+      const type = 'text/html';
+      const blob = new Blob([tempElement.innerHTML], { type });
+      const data = [new ClipboardItem({ [type]: blob })];
+      await navigator.clipboard.write(data);
+      
       setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
     } catch (err) {
       console.error('复制失败:', err);
     }
-    
-    selection.removeAllRanges();
-    document.body.removeChild(tempElement);
   };
 
   const downloadAsImage = async () => {
