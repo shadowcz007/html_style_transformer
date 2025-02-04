@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose, ToastAction } from "@/components/ui/toast"
 import html2canvas from 'html2canvas';
+import { cn } from "@/lib/utils";
 
 export default function MarkdownRenderer({ content }) {
   const [currentTheme, setCurrentTheme] = useState('wabisabi');
@@ -160,12 +161,27 @@ export default function MarkdownRenderer({ content }) {
     }
   };
 
+  const getComputedColor = (variable) => {
+    const color = getComputedStyle(document.documentElement)
+      .getPropertyValue(variable)
+      .trim();
+    // 确保返回有效的颜色格式
+    return color.startsWith('hsl') ? '#666666' : color;
+  };
+
   useEffect(() => {
-    // 初始化 mermaid
     Mermaid.initialize({
       startOnLoad: true,
-      theme: 'default',
+      theme: 'neutral',
       securityLevel: 'loose',
+      themeVariables: {
+        'primaryColor': '#1f2937',
+        'primaryTextColor': '#ffffff',
+        'primaryBorderColor': '#4b5563',
+        'lineColor': '#6b7280',
+        'secondaryColor': '#f3f4f6',
+        'tertiaryColor': '#e5e7eb'
+      }
     });
   }, []);
 
@@ -269,17 +285,33 @@ export default function MarkdownRenderer({ content }) {
                         setMermaidSvg(svg);
                       })
                       .catch(() => {
-                        setMermaidSvg(''); // 发生错误时清空 SVG
+                        setMermaidSvg('');
                       });
                   }, [children]);
                   
                   return mermaidSvg ? (
-                    <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
+                    <div className="my-4 p-4 bg-background border rounded-lg shadow-sm">
+                      <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
+                    </div>
                   ) : (
-                    <code className={className} {...props}>{children}</code>
+                    <code className={cn(
+                      "block w-full p-4 bg-muted rounded-lg",
+                      className
+                    )} {...props}>{children}</code>
                   );
                 }
-                return <code className={className} {...props}>{children}</code>;
+                return inline ? (
+                  <code className="px-1 py-0.5 bg-muted rounded text-sm" {...props}>
+                    {children}
+                  </code>
+                ) : (
+                  <code className={cn(
+                    "block w-full p-4 bg-muted rounded-lg overflow-x-auto",
+                    className
+                  )} {...props}>
+                    {children}
+                  </code>
+                );
               },
             }}
           >
