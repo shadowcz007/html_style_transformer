@@ -1,6 +1,9 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import Mermaid from 'mermaid';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github.css'; // 引入代码高亮样式
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { themes } from '../styles/markdownThemes';
@@ -15,7 +18,23 @@ export default function MarkdownRenderer({ content }) {
   const [showToast, setShowToast] = useState(false);
 
   const preprocessMarkdown = (text) => {
-    return text.replace(/\*\*[^*]+\*\*(?![.,!?;:，。！？；：])/g, match => match + ' ');
+    // 去除代码块前的缩进
+    text = text.replace(/(^|\n)(\s*)```/g, '$1```');
+    
+    // 处理加粗文本的空格
+    text = text.replace(/\*\*([^*]+)\*\*(\s*(?![.,!?;:，。！？；：\n])|(?=[.,!?;:，。！？；：\n]))/g, (match, p1, p2) => {
+      // 如果后面是标点或换行，不添加空格
+      if (p2.match(/[.,!?;:，。！？；：\n]/)) {
+        return `**${p1}**`;
+      }
+      // 否则确保只有一个空格
+      return `**${p1}** `;
+    });
+
+    // 确保列表项前有换行
+    text = text.replace(/(?<!\n)(- \*\*[^*]+\*\*[^。]*。?)/g, '\n$1');
+
+    return text;
   };
 
   const copyHtmlToClipboard = async () => {
@@ -141,6 +160,35 @@ export default function MarkdownRenderer({ content }) {
     }
   };
 
+  useEffect(() => {
+    // 初始化 mermaid
+    Mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose',
+    });
+  }, []);
+
+  const renderMermaid = (code) => {
+    try {
+      const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+      // 使用 mermaidAPI.render 而不是直接调用 render
+      return new Promise((resolve, reject) => {
+        Mermaid.mermaidAPI.render(id, code)
+          .then(({ svg }) => {
+            resolve({ svg });
+          })
+          .catch(error => {
+            console.error('Mermaid 渲染错误:', error);
+            reject(error);
+          });
+      });
+    } catch (e) {
+      console.error('Mermaid 初始化错误:', e);
+      return Promise.resolve({ svg: '' });
+    }
+  };
+
   return (
     <>
       <Card className="p-4">
@@ -183,8 +231,9 @@ export default function MarkdownRenderer({ content }) {
           className="markdown-container"
         >
           <ReactMarkdown 
-            rehypePlugins={[rehypeRaw]} 
+            rehypePlugins={[rehypeRaw,rehypeHighlight]} 
             remarkPlugins={[remarkGfm]}
+            
             className={`markdown-body ${currentTheme}`}
             components={{
               h1: ({node, ...props}) => <h1 className="markdown-h1" {...props} />,
@@ -207,6 +256,31 @@ export default function MarkdownRenderer({ content }) {
                   }}
                 />
               ),
+              code: ({node, inline, className, children, ...props}) => {
+                const match = /language-(\w+)/.exec(className || '');
+                const language = match && match[1];
+                
+                if (language === 'mermaid') {
+                  const [mermaidSvg, setMermaidSvg] = useState('');
+                  
+                  useEffect(() => {
+                    renderMermaid(String(children))
+                      .then(({ svg }) => {
+                        setMermaidSvg(svg);
+                      })
+                      .catch(() => {
+                        setMermaidSvg(''); // 发生错误时清空 SVG
+                      });
+                  }, [children]);
+                  
+                  return mermaidSvg ? (
+                    <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
+                  ) : (
+                    <code className={className} {...props}>{children}</code>
+                  );
+                }
+                return <code className={className} {...props}>{children}</code>;
+              },
             }}
           >
             {preprocessMarkdown(content)}
