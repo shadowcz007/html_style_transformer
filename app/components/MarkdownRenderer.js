@@ -334,6 +334,9 @@ export default function MarkdownRenderer({ content }) {
             max-width: 100%;
             height: auto;
           }
+          .markdown-container pre{
+            background-color: transparent;
+          }
         `}</style>
       </Card>
       
